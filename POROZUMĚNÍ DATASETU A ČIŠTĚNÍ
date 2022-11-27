@@ -1,16 +1,16 @@
-"""POROZUMĚNÍ DATASETU A ČIŠTĚNÍ:
+/*POROZUMĚNÍ DATASETU A ČIŠTĚNÍ:
 
 Ve snaze porozumět komplexním datům a usnadnit si práci s nimi jsme se pokusily dataset zjednodušit. 
 To se ukázalo býti slepou, velmi nebezpečnou, uličkou, která nás vrátila zpět. 
 V datasetu jsme např. objevily velký počet opakujících se záznamů, které se zdály být naprosto identické. 
-Myslely jsme, že se jedná o problém s rozhraním API, a proto jsme se tyto logy z našeho datasetu rozhodly odstranit:"""  
+Myslely jsme, že se jedná o problém s rozhraním API, a proto jsme se tyto logy z našeho datasetu rozhodly odstranit:*/ 
 
 CREATE OR REPLACE TABLE tabulka_ocistena_o_duplicity AS
 SELECT * FROM "221006_anonymized_data-csv"
 QUALIFY ROW_NUMBER() OVER (PARTITION BY "event_id" ORDER BY "event_id") = 1;
 
-"""Později jsme však zjistily, že opakující se logy se přeci jen liší a to právě v těch sloupečcích, které jsme z datasetu na začátku odstranily.  
+/*Později jsme však zjistily, že opakující se logy se přeci jen liší a to právě v těch sloupečcích, které jsme z datasetu na začátku odstranily.  
 Po bližším zkoumání jsme zjistily, že se jedná o systémové logy. Např. v případě odeslaného e-mailu se vytvoří takový počet logů, kolik příjemců je v e-mailu uvedeno.  
 Čas, kdy tato akce vznikla je pro všechny tyto logy stejný, ale čas, kdy tato událost dorazila do centrálního úložiště dat se liší. 
 Jelikož bylo naším záměrem monitorovat chování uživatelů, nemohly jsme o tyto dodatečné informace v systémových datech přijít, a proto jsme je vrátily zpět do hry. 
-Ponaučení: Dvakrát měř, jednou řež. V datasetu pořádně prověř důvod výskytu opakujících se záznamů před tím, než přikročíš k jejich odstranění.""" 
+Ponaučení: Dvakrát měř, jednou řež. V datasetu pořádně prověř důvod výskytu opakujících se záznamů před tím, než přikročíš k jejich odstranění.*/
