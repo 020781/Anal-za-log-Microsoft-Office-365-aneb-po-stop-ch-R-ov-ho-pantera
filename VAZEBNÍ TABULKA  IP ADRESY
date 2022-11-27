@@ -1,0 +1,14 @@
+/*Poslední část IP adres našeho datasetu byla randomnizovaná. tj. jejich poslední číselné kombinace byly náhodné. 
+Abychom obdržely validní informace (tedy alespoň jméno země či města) musely jsme useknout randomizovanou část a nahradit ji libovolnou kombinací čísel, 
+stejnou pro všechny záznamy.*/
+
+CREATE OR REPLACE TABLE "IP_ADDRESS_DIMENSION" AS
+SELECT "client_ip",
+    SPLIT_PART("client_ip", '.', 1) AS "ip_prvni_cast",
+    SPLIT_PART("client_ip", '.', 2) AS "ip_druha_cast",
+    SPLIT_PART("client_ip", '.', 3) AS "ip_treti_cast",
+    SPLIT_PART("client_ip", '.', 4) AS "ip_ctvrta_cast",
+    "ip_prvni_cast" || '.' || "ip_druha_cast" || '.' || "ip_treti_cast" AS "pravdiva_cast_IP_adresy",
+    "ip_prvni_cast" || '.' || "ip_druha_cast" || '.' || "ip_treti_cast" || '.'|| 233 :: VARCHAR AS "sjednocena_ip_adresa"
+FROM "221006_anonymized_data-csv"
+WHERE "sjednocena_ip_adresa" != '...233';
