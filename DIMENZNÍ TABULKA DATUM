@@ -1,0 +1,39 @@
+CREATE OR REPLACE TEMPORARY TABLE days_dim(days int)
+AS
+SELECT datediff(days, '2022-08-01', CURRENT_DATE);
+
+CREATE OR REPLACE TABLE "DATE_DIMENSION"
+AS
+SELECT TIMEADD(days, SEQ4(), '2022-08-01') AS "TIMESTAMP",
+            SPLIT_PART("TIMESTAMP", ' ',1) :: VARCHAR AS "DATE",
+            year("TIMESTAMP") :: VARCHAR AS "YEAR",
+            month("TIMESTAMP") :: VARCHAR AS "MONTH",
+            TO_VARCHAR("TIMESTAMP", 'MMMM') AS "MONTH_NAME",
+            day("TIMESTAMP") :: VARCHAR AS "DAY",
+            dayofweek("TIMESTAMP") :: VARCHAR AS "DAY_OF_WEEK",
+            dayofyear("TIMESTAMP") :: VARCHAR AS "DAY_OF_YEAR",
+            quarter("TIMESTAMP") :: VARCHAR AS "QUARTER",
+            CASE DAY_OF_WEEK
+            WHEN 0 THEN 'Sunday'
+            WHEN 1 THEN 'Monday'
+            WHEN 2 THEN 'Tuesday'
+            WHEN 3 THEN 'Wednesday'
+            WHEN 4 THEN 'Thursday'
+            WHEN 5 THEN 'Friday'
+            WHEN 6 THEN 'Saturday'
+            END AS "DAY_NAME",
+            CASE DAY_OF_WEEK
+            WHEN 0 THEN 'Weekend'
+            WHEN 1 THEN 'Working day'
+            WHEN 2 THEN 'Working day'
+            WHEN 3 THEN 'Working day'
+            WHEN 4 THEN 'Working day'
+            WHEN 5 THEN 'Working day'
+            WHEN 6 THEN 'Weekend'
+            END AS "WORKING_DAY_OR_WEEKEND"
+FROM TABLE(GENERATOR(ROWCOUNT=>(SELECT MAX(days) FROM days_dim)));
+
+CREATE OR REPLACE TABLE "DATE_DIMENSION" AS 
+SELECT *,
+    REPLACE("DATE", '-','') ::VARCHAR AS "DATE_ID"
+FROM "DATE_DIMENSION";
